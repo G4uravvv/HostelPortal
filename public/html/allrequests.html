@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="44329165683-24uag3q8muus5d683c212pdk6p1706hk.apps.googleusercontent.com">
+    <title>All Requests: Hostel Portal: Indraprastha Institute of Information Technology</title>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <script>
+        let userinfo;
+
+        function displayData() {
+            document.getElementById('loading_div').style.display = "none";
+            document.getElementById('username').innerText = userinfo.name.trim();
+            const _img = document.getElementById('picture');
+            const newImg = new Image;
+            newImg.onload = function () {
+                _img.src = this.src;
+            };
+            newImg.src = userinfo.picture;
+            document.getElementById('loading').style.visibility = "hidden";
+            
+            if (userinfo.requests.length===0) {
+                document.getElementById('nothing_to_show_div').style.display="block";
+            }else {
+                document.getElementById('nothing_to_show_div').style.display="none";
+                let req_str="";
+                for (let i=0;i<userinfo.requests.length;i++) {
+                    let color="";
+                    let hostel;
+                    let room="";
+                    if (userinfo.requests[i].status===1 || userinfo.requests[i].status===2) {
+                        color="#34d870";
+                        hostel=userinfo.requests[i].hostel_allocated;
+                        room=userinfo.requests[i].room_allocated;
+                    }else if (userinfo.requests[i].status===3 || userinfo.requests[i].status===4) {
+                        color="#ec4444";
+                        room=".";
+                        hostel=userinfo.requests[i].prefered_hostel;
+                    }
+                    req_str+=`
+                                <div style="height: 40px; color: `+color+`;">
+                                    <div style="width: 14%; float: left; text-align: center;  vertical-align: center; ">`+userinfo.requests[i].name+`<br><div style="font-size: 12px;">`+userinfo.requests[i].email+`</div></div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].request_time+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].semester+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+hostel+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].type+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+room+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].distance+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].reviewed_on+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 12%; float: left; text-align: center; vertical-align: center; padding-top: 5px;">`+userinfo.requests[i].reviewed_by_name+`</div>
+                                </div>
+                                <div style="border: 1px solid #e1e4dd;"></div>`;
+                }
+                document.getElementById('container_requests_div').innerHTML=req_str;
+            }
+        }
+
+        function showSnackBar(message) {
+            let snackbar= document.getElementById('snackbar');
+            snackbar.innerText=message;
+            snackbar.className="show";
+            setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 6000);
+        }
+
+
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/getAllRequests');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                userinfo=JSON.parse(xhr.responseText);
+                console.log(xhr.responseText);
+                displayData();
+            };
+            xhr.send("email="+profile.getEmail());
+        }
+
+
+        function signOut() {
+            document.getElementById('loading').style.visibility="visible";
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut();
+            auth2.disconnect();
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/logout');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                document.getElementById('loading').style.visibility="hidden";
+                const resp=JSON.parse(xhr.responseText);
+                if (resp.code===1) {
+                    window.location.replace("/");
+                }else {
+                    showSnackBar(resp.info);
+                }
+            };
+            xhr.send();
+        }
+
+        function refresh() {
+            window.location.replace("/allRequests");
+        }
+        
+        function Back() {
+            window.location.replace("/admin");
+        }
+    </script>
+</head>
+<body>
+<!--        //google signin-->
+<div class="g-signin2" data-onsuccess="onSignIn" style="display: none;"></div>
+
+
+<div class="header">
+    <div style="float: left; margin-left: 1%; width: 70%;">
+        <div style="cursor: pointer; font-size: 20px; margin-top: 18px; float: left; width: 15%;" onclick="refresh()" class="textFormatNormal">Hostel Portal</div>
+
+        <div style="float: right; margin-left:2%; width: 83%;">
+            <div class="top_panel_link_box_active" onclick="addAdmin()">All Requests</div>
+            <div class="top_panel_link_box" id="back_chip" onclick="Back()">Back to Admin Panel</div>
+        </div>
+    </div>
+
+    <!--        logout button-->
+    <div style="float: right; margin-top: 10px; margin-right: 3%;">
+        <div style="float: left;">
+            <div class="loading" style="float: left;" id="loading"></div>
+            <img style="float:left; height: 30px; width: 30px; border-radius: 50%; margin-left: 20px;" id="picture">
+            <div style="float: right; margin-top: 8px; margin-left: 10px;" class="textFormatNormal" id="username"></div>
+        </div>
+        <div style="float: right; cursor: pointer; margin-top: 8px; margin-left: 40px;" onclick="signOut()" class="textFormatLink">Logout</div>
+    </div>
+</div>
+
+
+
+<div id="requests_div" style="border: 0px solid #e1e4dd; border-radius: 10px; width: 95%; margin-left: 2.5%; float: left;">
+    <p style="text-align: center; font-size: 40px; " class="textFormatNormal">All Requests</p>
+    <div style="width: 100%">
+        <div class="request_box">
+
+            <div style="height: 40px;">
+                <div style="width: 14%; float: left; text-align: center;  vertical-align: center; line-height: 40px;"><b>Name</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Request Date</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Semester</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Hostel</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Room Type</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 20px;"><b>Room Alloc</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Distance</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed On</b></div>
+                <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                <div style="width: 12%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed By</b></div>
+            </div>
+            <div style="border: 1px solid #e1e4dd;"></div>
+
+            <div id="container_requests_div" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="mainBody">
+
+
+    <div id="loading_div" style="border: 1px solid #e1e4dd; border-radius: 10px; width: 70%; margin-left: 15%;  margin-top: 170px; float: left;">
+        <p style="text-align: center; font-size: 40px; " class="textFormatNormal">Please wait while we load your profile</p>
+    </div>
+
+    <div id="nothing_to_show_div" style="border: 1px solid #e1e4dd; border-radius: 10px; width: 70%; margin-left: 15%;  margin-top: 170px; float: left;">
+        <p style="text-align: center; font-size: 40px; " class="textFormatNormal">no new or recent requests !</p>
+    </div>
+</div>
+
+
+<div class="bottom_Panel" style="margin-top: 100px;">
+    <!--        copyright    -->
+    <div style="text-align: center; float: right; width: 100%;">
+        <p class="textFormatNormal" style="font-size: 16px;">&copy 2019 Indraprastha Institute of Information Technology, Delhi</p>
+    </div>
+
+    <div style="float: right;">
+    </div>
+</div>
+
+
+
+<div id="snackbar"></div>
+</body>
+</html>

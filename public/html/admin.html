@@ -124,7 +124,7 @@
 
 
         function allRequests() {
-            //all requests
+            window.location.replace("/allrequests");
         }
         
         function changeSemester() {
@@ -182,7 +182,7 @@
                     hostel=userinfo.requests[i].prefered_hostel;
                     room_alloc=".";
                     new_requests_str=new_requests_str+`
-                                    <div class="previous_request_box">
+                                    <div class="request_box">
                                         <div style="float: left;">
                                             <div style="width: 70%; float: left; margin-left: 15%; margin-top: 40px;" class="textFormatNormal">
                                                 <div style="float: left; font-size: 18px; width: 40%;">Request by </div>
@@ -250,56 +250,26 @@
                         hostel=userinfo.requests[i].hostel_allocated;
                         room_alloc=userinfo.requests[i].room_allocated;
                         approved_request_str+=`
-                                    <div class="previous_request_box">
-                                        <div style="float: right; margin-top: 10px; margin-right: 10px; font-size: 18px; color:`+color+`;"><b>`+status+`</b></div>
-                                        <div style="float: left;">
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Request date </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].request_time+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Semester </div>
-                                                <div style="float: right;margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].semester+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Hostel </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+hostel+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Room Type </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].type+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Room Allocated </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+room_alloc+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Distance </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].distance+` Km
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Reviewed On </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].reviewed_on+`
-                                                </div>
-                                            </div>
-                                           <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Reviewed by </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].reviewed_by_name+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px; margin-bottom: 40px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;"></div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 14px; color:`+color+`;">`+userinfo.requests[i].reviewed_by_email+`
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>`;
+                                    <div style="height: 40px;">
+                                    <div style="width: 14%; float: left; text-align: center;  vertical-align: center; ">`+userinfo.requests[i].name+`<br><div style="font-size: 12px;">`+userinfo.requests[i].email+`</div></div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].request_time+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].semester+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].hostel_allocated+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].type+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].room_allocated+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].distance+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].reviewed_on+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 12%; float: left; text-align: center; vertical-align: center; padding-top: 5px;">`+userinfo.requests[i].reviewed_by_name+`</div>
+                                </div>
+                                <div style="border: 1px solid #e1e4dd;"></div>`;
                     }else if (userinfo.requests[i].status===3) {
                         rejected_request_button_status=1;
                         status="Rejected";
@@ -307,56 +277,26 @@
                         hostel=userinfo.requests[i].prefered_hostel;
                         room_alloc=".";
                         rejected_request_str+=`
-                                    <div class="previous_request_box">
-                                        <div style="float: right; margin-top: 10px; margin-right: 10px; font-size: 18px; color:`+color+`;"><b>`+status+`</b></div>
-                                        <div style="float: left;">
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Request date </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].request_time+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Semester </div>
-                                                <div style="float: right;margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].semester+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Hostel </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+hostel+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Room Type </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].type+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Room Allocated </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+room_alloc+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Distance </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].distance+` Km
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Reviewed On </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].reviewed_on+`
-                                                </div>
-                                            </div>
-                                           <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;">Reviewed by </div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px; color:`+color+`;">`+userinfo.requests[i].reviewed_by_name+`
-                                                </div>
-                                            </div>
-                                            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px; margin-bottom: 40px;" class="textFormatNormal">
-                                                <div style="float: left; font-size: 18px; width: 40%;"></div>
-                                                <div style="float: right; margin-left: 5%; width: 55%; font-size: 14px; color:`+color+`;">`+userinfo.requests[i].reviewed_by_email+`
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>`;
+                                   <div style="height: 40px;">
+                                    <div style="width: 14%; float: left; text-align: center;  vertical-align: center; ">`+userinfo.requests[i].name+`<br><div style="font-size: 12px;">`+userinfo.requests[i].email+`</div></div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].request_time+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].semester+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].prefered_hostel+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].type+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 40px;">.</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].distance+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;">`+userinfo.requests[i].reviewed_on+`</div>
+                                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                                    <div style="width: 12%; float: left; text-align: center; vertical-align: center; padding-top: 5px;">`+userinfo.requests[i].reviewed_by_name+`</div>
+                                </div>
+                                <div style="border: 1px solid #e1e4dd;"></div>`;
                     }
                 }
             }
@@ -477,15 +417,63 @@
         </div>
     </div>
 
-    <div id="approved_requests_div" style="border: 0px solid #e1e4dd; border-radius: 10px; width: 50%; margin-left: 25%;  margin-top: 70px; float: left;">
+    <div id="approved_requests_div" style="border: 0px solid #e1e4dd; border-radius: 10px; width: 95%; margin-left: 2.5%; float: left;">
         <p style="text-align: center; font-size: 40px; " class="textFormatNormal">Approved Requests</p>
-        <div id="container_approved_requests_div" style="width: 100%;">
+        <div style="width: 100%;">
+            <div class="request_box">
+                <div style="height: 40px;">
+                    <div style="width: 14%; float: left; text-align: center;  vertical-align: center; line-height: 40px;"><b>Name</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Request Date</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Semester</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Hostel</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Room Type</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 20px;"><b>Room Alloc</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Distance</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed On</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 12%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed By</b></div>
+                </div>
+                <div style="border: 1px solid #e1e4dd;"></div>
+
+                <div id="container_approved_requests_div" style="width: 100%;"></div>
+            </div>
         </div>
     </div>
 
-    <div id="rejected_requests_div" style="border: 0px solid #e1e4dd; border-radius: 10px; width: 50%; margin-left: 25%;  margin-top: 70px; float: left;">
+    <div id="rejected_requests_div" style="border: 0px solid #e1e4dd; border-radius: 10px; width: 95%; margin-left: 2.5%; float: left;">
         <p style="text-align: center; font-size: 40px; " class="textFormatNormal">Rejected Requests</p>
-        <div id="container_rejected_requests_div" style="width: 100%;">
+        <div style="width: 100%;">
+            <div class="request_box">
+                <div style="height: 40px;">
+                    <div style="width: 14%; float: left; text-align: center;  vertical-align: center; line-height: 40px;"><b>Name</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Request Date</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Semester</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 9%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Hostel</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 17%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Room Type</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 5%; float: left; text-align: center; vertical-align: center; line-height: 20px;"><b>Room Alloc</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 8%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Distance</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 11%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed On</b></div>
+                    <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
+                    <div style="width: 12%; float: left; text-align: center; vertical-align: center; line-height: 40px;"><b>Reviewed By</b></div>
+                </div>
+                <div style="border: 1px solid #e1e4dd;"></div>
+
+                <div id="container_rejected_requests_div" style="width: 100%;"></div>
+            </div>
         </div>
     </div>
 

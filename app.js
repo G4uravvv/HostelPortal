@@ -295,6 +295,34 @@ app.get('/addAdminPanel', function (req, res) {
 });
 
 
+app.get('/allRequests', function (req, res) {
+    if (req.session.email && req.session.admin===true) {
+        res.sendFile(__dirname+"/public/html/allrequests.html");
+    }else {
+        res.redirect('/');
+    }
+
+});
+
+app.post('/getAllRequests', function (req, res) {
+    const email=req.body.email.trim();
+    const params= {};
+    params['email']=email;
+    if (email===req.session.email && req.session.admin===true) {
+        AllRequests(params).then(function (response) {
+            res.end(response);
+        }).catch(function (response) {
+            res.end(response);
+        });
+    }else {
+        //login verification failed
+        const response= {};
+        response['code']= -1;
+        response['info']= "Unauthorized access";
+        res.end(JSON.stringify(response));
+    }
+});
+
 //invalid routes
 app.get("*", function (req, res) {
     res.end("Error");
@@ -305,6 +333,62 @@ app.post("*", function (req, res) {
     res.end("Error");
 });
 
+
+let AllRequests= function AllRequests(params) {
+    return new Promise(function (resolve, reject) {
+        const response= {};
+        connectDB().then(function (connection) {
+            connection.query(`select * from Admin where email='`+params['email']+`'; select Requests.*, Users.name, Users.email from Requests, Users where uid=Users.id and status!=0;`, function (err, result) {
+                connection.end();
+                if (err) {
+                    console.log(err);
+                    response['code']=0;
+                    response['info']= "Oops! looks like we have some problem with our database. Please try again";
+                    reject(JSON.stringify(response));
+                }else {
+                    response['code']=0;
+                    response['info']="Account Details";
+                    response['id']=result[0][0].id;
+                    response['name']=result[0][0].name;
+                    response['email']=result[0][0].email;
+                    response['picture']=result[0][0].picture;
+                    response['lastlogin']=result[0][0].lastlogin;
+                    response['requests']=[];
+
+                    for (let i=0;i<result[1].length; i++) {
+                        let obj={};
+                        obj['id']=result[1][i].id;
+                        obj['uid']=result[1][i].uid;
+                        obj['request_time']=result[1][i].request_time;
+                        obj['prefered_hostel']=result[1][i].prefered_hostel;
+                        obj['semester']=result[1][i].semester;
+                        obj['type']=result[1][i].type;
+                        obj['house_no']=result[1][i].house_no;
+                        obj['locality']=result[1][i].locality;
+                        obj['city']=result[1][i].city;
+                        obj['state']=result[1][i].state;
+                        obj['pincode']=result[1][i].pincode;
+                        obj['status']=result[1][i].status;
+                        obj['distance']=result[1][i].distance;
+                        obj['room_allocated']=result[1][i].room_allocated;
+                        obj['hostel_allocated']=result[1][i].hostel_allocated;
+                        obj['reviewed_on']=result[1][i].reviewed_on;
+                        obj['name']=result[1][i].name;
+                        obj['email']=result[1][i].email;
+                        obj['reviewed_by_name']=result[1][i].reviewed_by_name;
+                        obj['reviewed_by_email']=result[1][i].reviewed_by_email;
+                        response['requests'].push(obj);
+                    }
+                    resolve(JSON.stringify(response));
+                }
+            });
+        }).catch(function (err) {
+            response['code']=0;
+            response['info']= "Oops! looks like we have some problem with our database. Please try again";
+            reject(JSON.stringify(response));
+        });
+    });
+};
 
 
 //approve request

@@ -26,7 +26,7 @@
             window.location.replace("/addAdminPanel");
         }
         
-        
+        //approve or reject a student requests
         function respondToRequest(status, id) {
             if (status===0) {
                 window.scrollTo(0, 0);
@@ -70,6 +70,7 @@
             }
         }
 
+        //load new requests
         function newRequests() {
             if (new_request_button_status===1) {
                 document.getElementById('new_requests_div').style.display="block";
@@ -86,7 +87,8 @@
                 showSnackBar("No New Requests !");
             }
         }
-        
+
+        //load approved requests
         function approvedRequests() {
             if (approved_request_button_status===1) {
                 document.getElementById('new_requests_div').style.display="none";
@@ -104,7 +106,7 @@
             }
         }
 
-
+        //load rejected requests
         function rejectedRequests() {
             if (rejected_request_button_status===1) {
                 document.getElementById('new_requests_div').style.display="none";
@@ -123,10 +125,12 @@
         }
 
 
+        //go to all requests
         function allRequests() {
             window.location.replace("/allrequests");
         }
-        
+
+        //unallocate all hostel rooms
         function changeSemester() {
             if (confirm("Are you sure you want to change semester? Changing semester will result in move of all current room holder into past room holders.")) {
                 document.getElementById('loading').style.visibility="visible";
@@ -149,6 +153,7 @@
             }
         }
 
+        //show a message at the bottom of the screen
         function showSnackBar(message) {
             let snackbar= document.getElementById('snackbar');
             snackbar.innerText=message;
@@ -156,12 +161,14 @@
             setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 6000);
         }
 
+        //display the data on webpage
         function displayData() {
             document.getElementById('loading_div').style.display = "none";
             document.getElementById('username').innerText = userinfo.name.trim();
             const _img = document.getElementById('picture');
             const newImg = new Image;
             newImg.onload = function () {
+                //load user profile image
                 _img.src = this.src;
             };
             newImg.src = userinfo.picture;
@@ -269,7 +276,7 @@
                                     <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
                                     <div style="width: 12%; float: left; text-align: center; vertical-align: center; padding-top: 5px;">`+userinfo.requests[i].reviewed_by_name+`</div>
                                 </div>
-                                <div style="border: 1px solid #e1e4dd;"></div>`;
+                                <div style="border-bottom: 1px solid #e1e4dd;"></div>`;
                     }else if (userinfo.requests[i].status===3) {
                         rejected_request_button_status=1;
                         status="Rejected";
@@ -296,7 +303,7 @@
                                     <div style="border: 1px solid #e1e4dd; border-radius: 25%; height: 100%; float: left;"></div>
                                     <div style="width: 12%; float: left; text-align: center; vertical-align: center; padding-top: 5px;">`+userinfo.requests[i].reviewed_by_name+`</div>
                                 </div>
-                                <div style="border: 1px solid #e1e4dd;"></div>`;
+                                <div style="border-bottom: 1px solid #e1e4dd;"></div>`;
                     }
                 }
             }
@@ -332,7 +339,7 @@
             }
         }
 
-
+        // https://developers.google.com/identity/sign-in/web/sign-in    for google signin
         function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
             var xhr = new XMLHttpRequest();
@@ -345,7 +352,7 @@
             xhr.send("email="+profile.getEmail());
         }
 
-
+        // https://developers.google.com/identity/sign-in/web/sign-in    for google signout
         function signOut() {
             document.getElementById('loading').style.visibility="visible";
             var auth2 = gapi.auth2.getAuthInstance();

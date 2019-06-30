@@ -19,6 +19,7 @@
             window.location.replace("/admin");
         }
 
+        //add new admin  and place request to server
         function addNewAdmin() {
             const email=document.getElementById('email_new').value.trim();
             if (email==="") {
@@ -44,6 +45,7 @@
             }
         }
 
+        //display page data
         function displayData() {
             document.getElementById('loading_div').style.display = "none";
             document.getElementById('username').innerText = userinfo.name.trim();
@@ -56,13 +58,17 @@
             document.getElementById('loading').style.visibility = "hidden";
             document.getElementById('add_admin_div').style.display="block";
         }
-            function showSnackBar(message) {
+
+
+        //show message at the bottom of the screen
+        function showSnackBar(message) {
             let snackbar= document.getElementById('snackbar');
             snackbar.innerText=message;
             snackbar.className="show";
             setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 6000);
         }
 
+        // https://developers.google.com/identity/sign-in/web/sign-in       for google signin
         function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
             var xhr = new XMLHttpRequest();
@@ -75,7 +81,7 @@
             xhr.send("email="+profile.getEmail());
         }
 
-
+        // https://developers.google.com/identity/sign-in/web/sign-in       for google signout
         function signOut() {
             document.getElementById('loading').style.visibility="visible";
             var auth2 = gapi.auth2.getAuthInstance();

@@ -453,7 +453,7 @@ let ChangeSemester= function ChangeSemester() {
     return new Promise(function (resolve, reject) {
         const response= {};
         connectDB().then(function (connection) {
-            connection.query(`update Requests set status=(case when status=0 then 4 when status=1 then 2 when status=3 then 4 end);`, function (err, result) {
+            connection.query(`update Requests set status=(case when status=0 then 4 when status=1 then 2 when status=3 then 4 end) where status=0 or status=1 or status=3;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);

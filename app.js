@@ -222,8 +222,9 @@ app.post('/changeSemester', function (req, res) {
     const email=req.body.email.trim();
     const params= {};
     params['email']=email;
+    params['id']=req.body.id.trim();
     if (email===req.session.email && req.session.admin===true) {
-        ChangeSemester().then(function (response) {
+        ChangeSemester(params).then(function (response) {
             res.end(response);
         }).catch(function (response) {
             res.end(response);
@@ -323,6 +324,48 @@ app.post('/getAllRequests', function (req, res) {
     }
 });
 
+//add new Semester
+app.post("/addSemester", function (req, res) {
+    const email=req.body.email.trim();
+    const params= {};
+    params['email']=email;
+    params['name']=req.body.name.trim().toLowerCase();
+    if (email===req.session.email && req.session.admin===true) {
+        AddSemester(params).then(function (response) {
+            res.end(response);
+        }).catch(function (response) {
+            res.end(response);
+        });
+    }else {
+        //login verification failed
+        const response= {};
+        response['code']= -1;
+        response['info']= "Unauthorized access";
+        res.end(JSON.stringify(response));
+    }
+});
+
+
+//add new Semester
+app.post("/getSemesters", function (req, res) {
+    const email=req.body.email.trim();
+    const params= {};
+    params['email']=email;
+    if (email===req.session.email && req.session.admin===true) {
+        GetSemesters(params).then(function (response) {
+            res.end(response);
+        }).catch(function (response) {
+            res.end(response);
+        });
+    }else {
+        //login verification failed
+        const response= {};
+        response['code']= -1;
+        response['info']= "Unauthorized access";
+        res.end(JSON.stringify(response));
+    }
+});
+
 //invalid routes
 app.get("*", function (req, res) {
     res.end("Error");
@@ -334,25 +377,108 @@ app.post("*", function (req, res) {
 });
 
 
+
+let GetSemesters= function GetSemesters() {
+    return new Promise(function (resolve, reject) {
+        const response= {};
+        connectDB().then(function (connection) {
+            connection.query(`Select * from Semesters;`, function (err, result) {
+                connection.end();
+                if (err) {
+                    console.log(err);
+                    response['code']=-1;
+                    response['info']= "Oops! looks like we have some problem with our database. Please try again";
+                    reject(JSON.stringify(response));
+                }else {
+                    response['code']=1;
+                    response['info']= "Semesters Found";
+                    response['semesters']= [];
+
+                    for (let i=0;i<result.length;i++) {
+                        let obj= {};
+                        obj['id']=result[i].id;
+                        obj['name']=result[i].name;
+                        obj['status']=result[i].status;
+                        response['semesters'].push(obj);
+                    }
+                    resolve(JSON.stringify(response));
+                }
+            });
+        }).catch(function (err) {
+            response['code']=-1;
+            response['info']= "Oops! looks like we have some problem with our database. Please try again";
+            reject(JSON.stringify(response));
+        });
+    });
+};
+
+
+// add semester
+let AddSemester= function AddSemester(params) {
+    return new Promise(function (resolve, reject) {
+        const response= {};
+        connectDB().then(function (connection) {
+            connection.query(`select * from Semesters where name="`+params['name']+`";`, function (err, result) {
+                if (err) {
+                    console.log(err);
+                    response['code']=-1;
+                    response['info']= "Oops! looks like we have some problem with our database. Please try again";
+                    reject(JSON.stringify(response));
+                }else {
+                    if (result.length===0) {
+                        connection.query(`insert into Semesters (name, status) values ("`+params['name']+`", 3)`, function (err, result) {
+                            // 1: current semester      2: previous semester    3:future semesters
+                            connection.end();
+                            if (err) {
+                                console.log(err);
+                                response['code']=-1;
+                                response['info']= "Oops! looks like we have some problem with our database. Please try again";
+                                reject(JSON.stringify(response));
+                            }else {
+                                response['code']=1;
+                                response['info']= "Semester added";
+                                resolve(JSON.stringify(response));
+                            }
+                        });
+                    }else {
+                        response['code']=2;
+                        response['info']= "Semester already exist!";
+                        resolve(JSON.stringify(response));
+                    }
+                }
+            });
+        }).catch(function (err) {
+            response['code']=-1;
+            response['info']= "Oops! looks like we have some problem with our database. Please try again";
+            reject(JSON.stringify(response));
+        });
+    });
+};
+
+
+//fetch all requests
 let AllRequests= function AllRequests(params) {
     return new Promise(function (resolve, reject) {
         const response= {};
         connectDB().then(function (connection) {
-            connection.query(`select * from Admin where email='`+params['email']+`'; select Requests.*, Users.name, Users.email from Requests, Users where uid=Users.id and status!=0;`, function (err, result) {
+            connection.query(`select * from Admin where email='`+params['email']+`'; select Requests.*, Users.name, Users.email from Requests, Users where uid=Users.id and status!=0 order by distance desc;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
-                    response['code']=0;
+                    response['code']=1;
                     response['info']="Account Details";
-                    response['id']=result[0][0].id;
-                    response['name']=result[0][0].name;
-                    response['email']=result[0][0].email;
-                    response['picture']=result[0][0].picture;
-                    response['lastlogin']=result[0][0].lastlogin;
+                    let obj= {};
+                    obj['id']=result[0][0].id;
+                    obj['name']=result[0][0].name;
+                    obj['email']=result[0][0].email;
+                    obj['picture']=result[0][0].picture;
+                    obj['lastlogin']=result[0][0].lastlogin;
+                    response['user']= obj;
+
                     response['requests']=[];
 
                     for (let i=0;i<result[1].length; i++) {
@@ -383,7 +509,7 @@ let AllRequests= function AllRequests(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -397,12 +523,12 @@ let ApproveRequest= function ApproveRequest(params) {
         const response= {};
         connectDB().then(function (connection) {
             const dateTime = require('node-datetime');
-            const dt = dateTime.create().format('d-m-Y H:M');
+            const dt = dateTime.create().format('Y-m-d H:M:S');
             connection.query(`update Requests set status=1, reviewed_by_name='`+params['name']+`', reviewed_by_email='`+params['email']+`', reviewed_on='`+dt+`', room_allocated='`+params['room_allocated']+`', hostel_allocated='`+params['hostel_allocated']+`' where id=`+params['id']+`;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
@@ -412,7 +538,7 @@ let ApproveRequest= function ApproveRequest(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -425,12 +551,12 @@ let RejectRequest= function RejectRequest(params) {
         const response= {};
         connectDB().then(function (connection) {
             const dateTime = require('node-datetime');
-            const dt = dateTime.create().format('d-m-Y H:M');
+            const dt = dateTime.create().format('Y-m-d H:M:S');
             connection.query(`update Requests set status=3, reviewed_by_name='`+params['name']+`', reviewed_by_email='`+params['email']+`', reviewed_on='`+dt+`' where id=`+params['id']+`;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
@@ -440,7 +566,7 @@ let RejectRequest= function RejectRequest(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -449,25 +575,25 @@ let RejectRequest= function RejectRequest(params) {
 
 
 //change sem function
-let ChangeSemester= function ChangeSemester() {
+let ChangeSemester= function ChangeSemester(params) {
     return new Promise(function (resolve, reject) {
         const response= {};
         connectDB().then(function (connection) {
-            connection.query(`update Requests set status=(case when status=0 then 4 when status=1 then 2 when status=3 then 4 end) where status=0 or status=1 or status=3;`, function (err, result) {
+            connection.query(`update Requests set status=(case when status=0 then 4 when status=1 then 2 when status=3 then 4 end) where status=0 or status=1 or status=3; update Semesters set status=1 where status=2; update Semesters set status=2 where id=`+params['id']+`;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
                     response['code']=1;
-                    response['info']= "Semester Changed";
+                    response['info']= "Semester Changed.";
                     resolve(JSON.stringify(response));
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -479,21 +605,24 @@ let AdminAccountInfo= function AdminAccountInfo(params) {
     return new Promise(function (resolve, reject) {
         const response= {};
         connectDB().then(function (connection) {
-            connection.query(`select * from Admin where email='`+params['email']+`'; select Requests.*, Users.name, Users.email from Requests, Users where uid=Users.id and status=0 or status=1 or status=3;`, function (err, result) {
+            connection.query(`select * from Admin where email='`+params['email']+`'; select Requests.*, Users.name, Users.email from Requests, Users where uid=Users.id and status=0 or status=1 or status=3; select * from Semesters;`, function (err, result) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
-                    response['code']=0;
+                    response['code']=1;
                     response['info']="Account Details";
-                    response['id']=result[0][0].id;
-                    response['name']=result[0][0].name;
-                    response['email']=result[0][0].email;
-                    response['picture']=result[0][0].picture;
-                    response['lastlogin']=result[0][0].lastlogin;
+                    let obj= {};
+                    obj['id']=result[0][0].id;
+                    obj['name']=result[0][0].name;
+                    obj['email']=result[0][0].email;
+                    obj['picture']=result[0][0].picture;
+                    obj['lastlogin']=result[0][0].lastlogin;
+                    response['user']= obj;
+
                     response['requests']=[];
 
                     for (let i=0;i<result[1].length; i++) {
@@ -520,11 +649,19 @@ let AdminAccountInfo= function AdminAccountInfo(params) {
                         obj['reviewed_by_email']=result[1][i].reviewed_by_email;
                         response['requests'].push(obj);
                     }
+                    response['semesters']=[];
+                    for (let i=0;i<result[2].length; i++) {
+                        let obj={};
+                        obj['id']=result[2][i].id;
+                        obj['name']=result[2][i].name;
+                        obj['status']=result[2][i].status;
+                        response['semesters'].push(obj);
+                    }
                     resolve(JSON.stringify(response));
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -540,7 +677,7 @@ let AddAdmin= function AddAdmin(params) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
@@ -550,7 +687,7 @@ let AddAdmin= function AddAdmin(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -566,7 +703,7 @@ let CancelRequest= function CancelRequest(params) {
                 connection.end();
                 if (err) {
                     console.log(err);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 }else {
@@ -576,7 +713,7 @@ let CancelRequest= function CancelRequest(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -590,13 +727,13 @@ let RequestHostel= function RequestHostel(params) {
         const response= {};
         connectDB().then(function (connection) {
             const dateTime = require('node-datetime');
-            const dt = dateTime.create().format('d-m-Y H:M');
+            const dt = dateTime.create().format('Y-m-d H:M:S');
 
             const url="http://dev.virtualearth.net/REST/v1/Routes?wayPoint.1="+params['house_no']+",+"+params['locality']+",+"+params['city']+",+"+params['state']+",+"+params['pincode']+"&wayPoint.2=Indraprastha+Institute+of+Information+Technology+Delhi,+Okhla+Industrial+Estate,+Phase+III,+Near+Govind+Puri+Metro+Station,+New Delhi,+Delhi+110020&optimize=distance&distanceUnit=km&key=Ak_kpR98HPwCaUnY5WzO8_EN6sKtSIZ-_cov0gUmGi3tlLXawKiAogmFTDeGj2x0";
             request(url, function (error, resp, body) {
                 if (error) {
                     console.log(error);
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Opps! we couldn't find the distance between your home and college. Please try again";
                     reject(JSON.stringify(response));
                 }else {
@@ -608,7 +745,7 @@ let RequestHostel= function RequestHostel(params) {
                         connection.end();
                         if (err) {
                             console.log(err);
-                            response['code']=0;
+                            response['code']=-1;
                             response['info']= "Oops! looks like we have some problem with our database. Please try again";
                             reject(JSON.stringify(response));
                         }else {
@@ -620,7 +757,7 @@ let RequestHostel= function RequestHostel(params) {
                 }
             });
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -636,50 +773,61 @@ let AccountInfo= function AccountInfo(params) {
             connection.query(`select * from Users where email='`+params['email']+`';`, function (err, result) {
                 if (err) {
                     connection.end();
-                    response['code']=0;
+                    response['code']=-1;
                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                     reject(JSON.stringify(response));
                 } else {
                     response['code']=1;
                     response['info']= "Account Details";
-                    response['id']=result[0].id;
-                    response['name']=result[0].name;
-                    response['email']=result[0].email;
-                    response['picture']=result[0].picture;
-                    response['lastlogin']=result[0].lastlogin;
-                    response['house_no']=result[0].house_no;
-                    response['locality']=result[0].locality;
-                    response['city']=result[0].city;
-                    response['state']=result[0].state;
-                    response['pincode']=result[0].pincode;
+                    let obj= {};
+                    obj['id']=result[0].id;
+                    obj['name']=result[0].name;
+                    obj['email']=result[0].email;
+                    obj['picture']=result[0].picture;
+                    obj['lastlogin']=result[0].lastlogin;
+                    obj['house_no']=result[0].house_no;
+                    obj['locality']=result[0].locality;
+                    obj['city']=result[0].city;
+                    obj['state']=result[0].state;
+                    obj['pincode']=result[0].pincode;
+                    response['user']=obj;
 
-                    connection.query(`select * from Requests where uid=`+result[0].id+`;`, function (err, result2) {
+                    connection.query(`select * from Requests where uid=`+result[0].id+`; select * from Semesters;`, function (err, result2) {
                         connection.end();
                         if (err) {
-                            response['code']=0;
+                            response['code']=-1;
                             response['info']= "Oops! looks like we have some problem with our database. Please try again";
                             reject(JSON.stringify(response));
                         }else {
                             response['requests']=[];
-                            for (let i=0;i<result2.length;i++) {
+                            for (let i=0;i<result2[0].length;i++) {
                                 let obj={};
-                                obj['id']=result2[i].id;
-                                obj['uid']=result2[i].uid;
-                                obj['request_time']=result2[i].request_time;
-                                obj['prefered_hostel']=result2[i].prefered_hostel;
-                                obj['semester']=result2[i].semester;
-                                obj['type']=result2[i].type;
-                                obj['house_no']=result2[i].house_no;
-                                obj['locality']=result2[i].locality;
-                                obj['city']=result2[i].city;
-                                obj['state']=result2[i].state;
-                                obj['pincode']=result2[i].pincode;
-                                obj['status']=result2[i].status;
-                                obj['distance']=result2[i].distance;
-                                obj['room_allocated']=result2[i].room_allocated;
-                                obj['hostel_allocated']=result2[i].hostel_allocated;
-                                obj['reviewed_on']=result2[i].reviewed_on;
+                                obj['id']=result2[0][i].id;
+                                obj['uid']=result2[0][i].uid;
+                                obj['request_time']=result2[0][i].request_time;
+                                obj['prefered_hostel']=result2[0][i].prefered_hostel;
+                                obj['semester']=result2[0][i].semester;
+                                obj['type']=result2[0][i].type;
+                                obj['house_no']=result2[0][i].house_no;
+                                obj['locality']=result2[0][i].locality;
+                                obj['city']=result2[0][i].city;
+                                obj['state']=result2[0][i].state;
+                                obj['pincode']=result2[0][i].pincode;
+                                obj['status']=result2[0][i].status;
+                                obj['distance']=result2[0][i].distance;
+                                obj['room_allocated']=result2[0][i].room_allocated;
+                                obj['hostel_allocated']=result2[0][i].hostel_allocated;
+                                obj['reviewed_on']=result2[0][i].reviewed_on;
                                 response['requests'].push(obj);
+                            }
+
+                            response['semesters']=[];
+                            for (let i=0;i<result2[1].length;i++) {
+                                let obj={};
+                                obj['id']=result2[1][i].id;
+                                obj['name']=result2[1][i].name;
+                                obj['status']=result2[1][i].status;
+                                response['semesters'].push(obj);
                             }
                             resolve(JSON.stringify(response));
                         }
@@ -687,7 +835,7 @@ let AccountInfo= function AccountInfo(params) {
                 }
             })
         }).catch(function (err) {
-            response['code']=0;
+            response['code']=-1;
             response['info']= "Oops! looks like we have some problem with our database. Please try again";
             reject(JSON.stringify(response));
         });
@@ -711,12 +859,12 @@ let Login= function Login(params) {
                     if (err) {
                         //returns flag=0 as database connection fails
                         connection.end();
-                        response['code']= 0;
+                        response['code']= -1;
                         response['info']= "Oops! looks like we have some problem with our database. Please try again";
                         reject(JSON.stringify(response));
                     }else {
                         const dateTime = require('node-datetime');
-                        const dt = dateTime.create().format('d-m-Y H:M');
+                        const dt = dateTime.create().format('Y-m-d H:M:S');
                         if (result[1].length===1) {
                             //user is a admin
                             //update lastlogin and other information
@@ -725,7 +873,7 @@ let Login= function Login(params) {
                                 if (err) {
                                     //update failed
                                     console.log(err);
-                                    response['code']= 0;
+                                    response['code']= -1;
                                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                                     reject(JSON.stringify(response));
                                 }else {
@@ -745,7 +893,7 @@ let Login= function Login(params) {
                                 connection.end();
                                 if (err) {
                                     //returns flag=0 as database connection fails
-                                    response['code']= 0;
+                                    response['code']= -1;
                                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                                     reject(JSON.stringify(response));
                                 }else {
@@ -765,7 +913,7 @@ let Login= function Login(params) {
                                 connection.end();
                                 if (err) {
                                     //returns flag=0 as database connection fails
-                                    response['code']= 0;
+                                    response['code']= -1;
                                     response['info']= "Oops! looks like we have some problem with our database. Please try again";
                                     reject(JSON.stringify(response));
                                 }else {
@@ -782,7 +930,7 @@ let Login= function Login(params) {
                 });
             }).catch(function (err) {
                 //returns flag=0 as database connection fails
-                response['code']= 0;
+                response['code']= -1;
                 response['info']= "Oops! looks like we have some problem with our database. Please try again";
                 reject(JSON.stringify(response));
             })

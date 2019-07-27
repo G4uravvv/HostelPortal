@@ -41,20 +41,20 @@
                         showSnackBar(resp.info);
                     }
                 };
-                xhr.send("email=" + userinfo.email + "&add_email=" + email);
+                xhr.send("email=" + userinfo.user.email + "&add_email=" + email);
             }
         }
 
         //display page data
         function displayData() {
             document.getElementById('loading_div').style.display = "none";
-            document.getElementById('username').innerText = userinfo.name.trim();
+            document.getElementById('username').innerText = userinfo.user.name.trim();
             const _img = document.getElementById('picture');
             const newImg = new Image;
             newImg.onload = function () {
                 _img.src = this.src;
             };
-            newImg.src = userinfo.picture;
+            newImg.src = userinfo.user.picture;
             document.getElementById('loading').style.visibility = "hidden";
             document.getElementById('add_admin_div').style.display="block";
         }
@@ -157,9 +157,6 @@
     <!--        copyright    -->
     <div style="text-align: center; float: right; width: 100%;">
         <p class="textFormatNormal" style="font-size: 16px;">&copy 2019 Indraprastha Institute of Information Technology, Delhi</p>
-    </div>
-
-    <div style="float: right;">
     </div>
 </div>
 

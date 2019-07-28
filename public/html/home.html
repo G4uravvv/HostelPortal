@@ -14,6 +14,8 @@
             document.getElementById('requestHostel_div').style.display="none";
             document.getElementById('currentRequest_div').style.display="none";
             document.getElementById('previousRequest_div').style.display="none";
+            document.getElementById('cancel_req_button').style.display="none";
+            document.getElementById('pay_fee_button').style.display="none";
         });
 
         let request_btn_status=1;
@@ -182,6 +184,7 @@
                     document.getElementById('cr_type').innerText=userinfo.requests[i].type;
                     document.getElementById('cr_distance').innerText=userinfo.requests[i].distance+" Km";
                     if (userinfo.requests[i].status===0) {
+                        document.getElementById('cancel_req_button').style.display="block";
                         document.getElementById('cr_status').innerText="Pending...";
                         document.getElementById('cr_r_alloc').innerText=".";
                         document.getElementById('cr_reviewed').innerText=".";
@@ -195,7 +198,7 @@
                         document.getElementById('cr_r_alloc').style.color="#f3b54a";
                         document.getElementById('cr_distance').style.color="#f3b54a";
                     }else if (userinfo.requests[i].status===1) {
-                        document.getElementById('cancel_req_button').style.display="none";
+                        document.getElementById('pay_fee_button').style.display="block";
                         document.getElementById('cr_status').innerText="Approved";
                         document.getElementById('cr_r_alloc').innerText=userinfo.requests[i].room_allocated;
                         document.getElementById('cr_reviewed').innerText=userinfo.requests[i].reviewed_on;
@@ -209,7 +212,6 @@
                         document.getElementById('cr_r_alloc').style.color="#34d870";
                         document.getElementById('cr_distance').style.color="#34d870";
                     }else if (userinfo.requests[i].status===3) {
-                        document.getElementById('cancel_req_button').style.display="none";
                         document.getElementById('cr_status').innerText="Rejected";
                         document.getElementById('cr_r_alloc').innerText=".";
                         document.getElementById('cr_reviewed').innerText=userinfo.requests[i].reviewed_on;
@@ -497,6 +499,8 @@
 
         <div style="font-size: 25px; width: 44%; float: left; margin-left: 28%; margin-bottom: 50px; margin-top: 40px;">
             <button style="width: 100%; border: 0px solid; padding: 15px; background-color: #303030; border-radius: 10px; font-size: 20px; color: #ffffff;" class="textFormatNormal" onclick="cancelRequest()" id="cancel_req_button">Cancel Request</button>
+            <a href="https://payments.iiitd.edu.in/pg/fees/pg.html" target="_blank" style="text-decoration: none;"><button style="width: 100%; border: 0px solid; padding: 15px; background-color: #303030; border-radius: 10px; font-size: 20px; color: #ffffff; cursor: pointer;" class="textFormatNormal" id="pay_fee_button">Pay Fee</button></a>
+
         </div>
     </div>
 

@@ -366,6 +366,49 @@ app.post("/getSemesters", function (req, res) {
     }
 });
 
+app.post('/getFees', function (req, res) {
+    const email=req.body.email.trim();
+    const params= {};
+    params['email']=email;
+    if (email===req.session.email && req.session.admin===true) {
+        GetFees(params).then(function (response) {
+            res.end(response);
+        }).catch(function (response) {
+            res.end(response);
+        });
+    }else {
+        //login verification failed
+        const response= {};
+        response['code']= -1;
+        response['info']= "Unauthorized access";
+        res.end(JSON.stringify(response));
+    }
+});
+
+app.post('/saveFees', function (req, res) {
+    const email=req.body.email.trim();
+    const params= {};
+    params['email']=email;
+    params['f1']=req.body.f1.trim();
+    params['f2']=req.body.f2.trim();
+    params['f3']=req.body.f3.trim();
+    params['f4']=req.body.f4.trim();
+
+    if (email===req.session.email && req.session.admin===true) {
+        SaveFees(params).then(function (response) {
+            res.end(response);
+        }).catch(function (response) {
+            res.end(response);
+        });
+    }else {
+        //login verification failed
+        const response= {};
+        response['code']= -1;
+        response['info']= "Unauthorized access";
+        res.end(JSON.stringify(response));
+    }
+});
+
 //invalid routes
 app.get("*", function (req, res) {
     res.end("Error");
@@ -376,6 +419,66 @@ app.post("*", function (req, res) {
     res.end("Error");
 });
 
+
+let SaveFees= function SaveFees(params) {
+    return new Promise(function (resolve, reject) {
+        const response= {};
+        connectDB().then(function (connection) {
+            connection.query(`update Fees set fees =(case when id=1 then `+params['f1']+` when id=2 then `+params['f2']+` when id=3 then `+params['f3']+` when id=4 then `+params['f4']+` end)`, function (err, result) {
+                connection.end();
+                if (err) {
+                    console.log(err);
+                    response['code'] = -1;
+                    response['info'] = "Oops! looks like we have some problem with our database. Please try again";
+                    reject(JSON.stringify(response));
+                } else {
+                    response['code'] = 1;
+                    response['info'] = "Fees updated";
+                    resolve(JSON.stringify(response));
+                }
+            });
+        }).catch(function (err) {
+            response['code']=-1;
+            response['info']= "Oops! looks like we have some problem with our database. Please try again";
+            reject(JSON.stringify(response));
+        });
+    });
+};
+
+let GetFees= function GetFees(params) {
+    return new Promise(function (resolve, reject) {
+        const response= {};
+        connectDB().then(function (connection) {
+            connection.query(`select * from Fees;`, function (err, result) {
+                connection.end();
+                if (err) {
+                    console.log(err);
+                    response['code']=-1;
+                    response['info']= "Oops! looks like we have some problem with our database. Please try again";
+                    reject(JSON.stringify(response));
+                }else {
+                    response['code']=1;
+                    response['info']= "Fees info Found";
+                    response['fees']= [];
+
+                    for (let i=0;i<result.length;i++) {
+                        let obj= {};
+                        obj['id']=result[i].id;
+                        obj['name']=result[i].name;
+                        obj['fees']=result[i].fees;
+                        response['fees'].push(obj);
+                    }
+
+                    resolve(JSON.stringify(response));
+                }
+            });
+        }).catch(function (err) {
+            response['code']=-1;
+            response['info']= "Oops! looks like we have some problem with our database. Please try again";
+            reject(JSON.stringify(response));
+        });
+    });
+};
 
 
 let GetSemesters= function GetSemesters() {
@@ -391,7 +494,7 @@ let GetSemesters= function GetSemesters() {
                     reject(JSON.stringify(response));
                 }else {
                     response['code']=1;
-                    response['info']= "Semesters Found";
+                    response['info']= "Semesters info Found";
                     response['semesters']= [];
 
                     for (let i=0;i<result.length;i++) {
@@ -792,7 +895,7 @@ let AccountInfo= function AccountInfo(params) {
                     obj['pincode']=result[0].pincode;
                     response['user']=obj;
 
-                    connection.query(`select * from Requests where uid=`+result[0].id+`; select * from Semesters;`, function (err, result2) {
+                    connection.query(`select * from Requests where uid=`+result[0].id+`; select * from Semesters; select * from Fees`, function (err, result2) {
                         connection.end();
                         if (err) {
                             response['code']=-1;
@@ -828,6 +931,15 @@ let AccountInfo= function AccountInfo(params) {
                                 obj['name']=result2[1][i].name;
                                 obj['status']=result2[1][i].status;
                                 response['semesters'].push(obj);
+                            }
+
+                            response['fees']=[];
+                            for (let i=0;i<result2[2].length;i++) {
+                                let obj={};
+                                obj['id']=result2[2][i].id;
+                                obj['name']=result2[2][i].name;
+                                obj['fees']=result2[2][i].fees;
+                                response['fees'].push(obj);
                             }
                             resolve(JSON.stringify(response));
                         }

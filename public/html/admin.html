@@ -21,6 +21,7 @@
             document.getElementById('approved_requests_div').style.display="none";
             document.getElementById('nothing_to_show_div').style.display="none";
             document.getElementById('semester_info').style.display="none";
+            document.getElementById('fees_info').style.display="none";
         });
 
         function addAdmin() {
@@ -159,6 +160,11 @@
             }
         }
 
+
+        function close_fees_info() {
+            document.getElementById('fees_info').style.display="none";
+        }
+
         function getSemesterInfo() {
             document.getElementById('loading').style.visibility = "visible";
             var xhr = new XMLHttpRequest();
@@ -197,6 +203,70 @@
             document.getElementById('semester_info').style.height=(screen.height)+"px";
             getSemesterInfo();
         }
+
+
+        //semester info
+        function fees_info() {
+            document.getElementById('fees_info').style.display="block";
+            document.getElementById('fees_info').style.height=(screen.height)+"px";
+            getFeesInfo();
+        }
+
+        function getFeesInfo() {
+            document.getElementById('loading').style.visibility = "visible";
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/getFees');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+                document.getElementById('loading').style.visibility = "hidden";
+                let json=JSON.parse(xhr.responseText);
+                if (json.code===1) {
+                    let fees=json.fees;
+                    for (let i=0;i<fees.length;i++) {
+                        if (fees[i].id===1) {
+                            document.getElementById('single_bm_fees').value=fees[i].fees;
+                        }
+                        if (fees[i].id===2) {
+                            document.getElementById('double_bm_fees').value=fees[i].fees;
+                        }
+                        if (fees[i].id===3) {
+                            document.getElementById('single_phd_fees').value=fees[i].fees;
+                        }
+                        if (fees[i].id===4) {
+                            document.getElementById('double_phd_fees').value=fees[i].fees;
+                        }
+                    }
+                }else {
+                    showSnackBar(json.info);
+                }
+            };
+            xhr.send("email="+userinfo.user.email);
+        }
+
+        function saveFees() {
+            let f1=document.getElementById('single_bm_fees').value.trim().toString();
+            let f2=document.getElementById('double_bm_fees').value.trim().toString();
+            let f3=document.getElementById('single_phd_fees').value.trim().toString();
+            let f4=document.getElementById('double_phd_fees').value.trim().toString();
+
+            if (f1==="" || f2==="" || f3==="" || f4==="") {
+                showSnackBar("Fees value cannot be null");
+            }else {
+                document.getElementById('loading').style.visibility = "visible";
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/saveFees');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    document.getElementById('loading').style.visibility = "hidden";
+                    console.log(xhr.responseText);
+                    let json=JSON.parse(xhr.responseText);
+                    showSnackBar(json.info);
+                };
+                xhr.send("email="+userinfo.user.email+"&f1="+f1+"&f2="+f2+"&f3="+f3+"&f4="+f4);
+            }
+        }
+
 
         function close_semester_info() {
             document.getElementById('semester_info').style.display="none";
@@ -477,6 +547,7 @@
             <div class="top_panel_link_box" id="previous_request_chip" onclick="allRequests()">All Requests</div>
             <div class="top_panel_link_box" id="add_admin_chip" onclick="addAdmin()">Add Admin</div>
             <div class="top_panel_link_box" id="semester_chip" onclick="semester_info()">Semesters</div>
+            <div class="top_panel_link_box" id="fees_chip" onclick="fees_info()">Fees</div>
         </div>
     </div>
 
@@ -600,6 +671,26 @@
             <input type="text" class="textFormatNormal" style="padding: 10px; width: 180px; font-size: 18px; border-radius: 5px; border: 1px solid #f0f1ef; margin-left: 55px;" placeholder="Semester name" id="add_semester_name">
             <button style="width: 100px; border: 0px solid; padding: 15px; cursor: pointer; background-color: #303030; margin-left: 15px; border-radius: 10px; font-size: 14px; color: #ffffff;" class="textFormatNormal" onclick="addSemester()">Add</button>
         </div>
+    </div>
+</div>
+
+<div style="width: 100%; background-color: #3030308f; position:relative;" id="fees_info">
+    <div style="background-color: #FFFFFF; width: 40%; position:absolute; margin-left: 30%; padding: 30px; border-radius: 10px; margin-top: 100px; margin-bottom: 100px;" class="textFormatNormal">
+        <div style="float: right; cursor: pointer;" onclick="close_fees_info()"><img src="../images/close.png" height="22" width="22"></div>
+        <div style="text-align: center; font-size: 25px;">Fees</div><br><br>
+        <div class="textFormatNormal" style="font-size: 18px;">Single Room- BTech/Mtech:
+            <input type="number" class="textFormatNormal" style="padding: 10px; width: 180px; font-size: 18px; border-radius: 5px; border: 1px solid #f0f1ef; margin-left: 55px;" placeholder="Fees" id="single_bm_fees">
+        </div><br>
+        <div class="textFormatNormal" style="font-size: 18px;">Double Room- BTech/Mtech:
+            <input type="number" class="textFormatNormal" style="padding: 10px; width: 180px; font-size: 18px; border-radius: 5px; border: 1px solid #f0f1ef; margin-left: 45px;" placeholder="Fees" id="double_bm_fees">
+        </div><br>
+        <div class="textFormatNormal" style="font-size: 18px;">Single Room- PHD:
+            <input type="number" class="textFormatNormal" style="padding: 10px; width: 180px; font-size: 18px; border-radius: 5px; border: 1px solid #f0f1ef; margin-left: 135px;" placeholder="Fees" id="single_phd_fees">
+        </div><br>
+        <div class="textFormatNormal" style="font-size: 18px;">Single Room- PHD:
+            <input type="number" class="textFormatNormal" style="padding: 10px; width: 180px; font-size: 18px; border-radius: 5px; border: 1px solid #f0f1ef; margin-left: 135px;" placeholder="Fees" id="double_phd_fees">
+        </div><br><br>
+        <button style="width: 80%; border: 0px solid; padding: 15px; cursor: pointer; background-color: #303030; margin-left: 10%; margin-right: 10%; border-radius: 10px; font-size: 14px; color: #ffffff;" class="textFormatNormal" onclick="saveFees()">Save Fees</button>
     </div>
 </div>
 </body>

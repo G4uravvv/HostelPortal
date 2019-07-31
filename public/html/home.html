@@ -16,6 +16,7 @@
             document.getElementById('previousRequest_div').style.display="none";
             document.getElementById('cancel_req_button').style.display="none";
             document.getElementById('pay_fee_button').style.display="none";
+            document.getElementById('fees_div').style.display="none";
         });
 
         let request_btn_status=1;
@@ -199,6 +200,7 @@
                         document.getElementById('cr_distance').style.color="#f3b54a";
                     }else if (userinfo.requests[i].status===1) {
                         document.getElementById('pay_fee_button').style.display="block";
+                        document.getElementById('fees_div').style.display="block";
                         document.getElementById('cr_status').innerText="Approved";
                         document.getElementById('cr_r_alloc').innerText=userinfo.requests[i].room_allocated;
                         document.getElementById('cr_reviewed').innerText=userinfo.requests[i].reviewed_on;
@@ -211,6 +213,26 @@
                         document.getElementById('cr_reviewed').style.color="#34d870";
                         document.getElementById('cr_r_alloc').style.color="#34d870";
                         document.getElementById('cr_distance').style.color="#34d870";
+                        document.getElementById('single_bm_fees').style.color="#34d870";
+                        document.getElementById('double_bm_fees').style.color="#34d870";
+                        document.getElementById('single_phd_fees').style.color="#34d870";
+                        document.getElementById('double_phd_fees').style.color="#34d870";
+
+                        let fees=userinfo.fees;
+                        for (let i=0;i<fees.length;i++) {
+                            if (fees[i].id===1) {
+                                document.getElementById('single_bm_fees').innerText="Rs. "+fees[i].fees+"/semester";
+                            }
+                            if (fees[i].id===2) {
+                                document.getElementById('double_bm_fees').innerText="Rs. "+fees[i].fees+"/semester";
+                            }
+                            if (fees[i].id===3) {
+                                document.getElementById('single_phd_fees').innerText="Rs. "+fees[i].fees+"/semester";
+                            }
+                            if (fees[i].id===4) {
+                                document.getElementById('double_phd_fees').innerText="Rs. "+fees[i].fees+"/semester";
+                            }
+                        }
                     }else if (userinfo.requests[i].status===3) {
                         document.getElementById('cr_status').innerText="Rejected";
                         document.getElementById('cr_r_alloc').innerText=".";
@@ -497,10 +519,38 @@
             </div>
         </div>
 
+        <div id="fees_div">
+            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 40px;" class="textFormatNormal">
+                <div style="float: left; font-size: 18px; width: 40%;">Fees Information</div>
+                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px;">
+                </div>
+            </div>
+
+            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
+                <div style="float: left; font-size: 18px; width: 40%;">Single room- BTech/Mtech</div>
+                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px;" id="single_bm_fees">
+                </div>
+            </div>
+            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
+                <div style="float: left; font-size: 18px; width: 40%;">Double room- BTech/Mtech</div>
+                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px;" id="double_bm_fees">
+                </div>
+            </div>
+            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
+                <div style="float: left; font-size: 18px; width: 40%;">Single room- PHD</div>
+                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px;" id="single_phd_fees">
+                </div>
+            </div>
+            <div style="width: 70%; float: left; margin-left: 15%; margin-top: 10px;" class="textFormatNormal">
+                <div style="float: left; font-size: 18px; width: 40%;">Double room- PHD</div>
+                <div style="float: right; margin-left: 5%; width: 55%; font-size: 18px;" id="double_phd_fees">
+                </div>
+            </div>
+        </div>
+
         <div style="font-size: 25px; width: 44%; float: left; margin-left: 28%; margin-bottom: 50px; margin-top: 40px;">
             <button style="width: 100%; border: 0px solid; padding: 15px; background-color: #303030; border-radius: 10px; font-size: 20px; color: #ffffff;" class="textFormatNormal" onclick="cancelRequest()" id="cancel_req_button">Cancel Request</button>
             <a href="https://payments.iiitd.edu.in/pg/fees/pg.html" target="_blank" style="text-decoration: none;"><button style="width: 100%; border: 0px solid; padding: 15px; background-color: #303030; border-radius: 10px; font-size: 20px; color: #ffffff; cursor: pointer;" class="textFormatNormal" id="pay_fee_button">Pay Fee</button></a>
-
         </div>
     </div>
 

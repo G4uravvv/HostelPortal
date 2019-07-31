@@ -411,12 +411,12 @@ app.post('/saveFees', function (req, res) {
 
 //invalid routes
 app.get("*", function (req, res) {
-    res.end("Error");
+    res.sendFile(__dirname+"/public/html/error.html");
 });
 
 //invalid routes
 app.post("*", function (req, res) {
-    res.end("Error");
+    res.sendFile(__dirname+"/public/html/error.html");
 });
 
 

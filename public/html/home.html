@@ -354,7 +354,6 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 userinfo=JSON.parse(xhr.responseText);
-                console.log(userinfo);
                 displayData();
             };
             xhr.send("email="+profile.getEmail());

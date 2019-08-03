@@ -145,7 +145,6 @@
                 xhr.open('POST', '/addSemester');
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onload = function() {
-                    //console.log(xhr.responseText);
                     let json=JSON.parse(xhr.responseText);
                     if (json.code===1) {
                         showSnackBar("Semester Added. refreshing list...");
@@ -171,7 +170,6 @@
             xhr.open('POST', '/getSemesters');
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
-                console.log(xhr.responseText);
                 document.getElementById('loading').style.visibility = "hidden";
                 let json=JSON.parse(xhr.responseText);
                 if (json.code===1) {
@@ -218,7 +216,6 @@
             xhr.open('POST', '/getFees');
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
-                console.log(xhr.responseText);
                 document.getElementById('loading').style.visibility = "hidden";
                 let json=JSON.parse(xhr.responseText);
                 if (json.code===1) {
@@ -259,7 +256,6 @@
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onload = function() {
                     document.getElementById('loading').style.visibility = "hidden";
-                    console.log(xhr.responseText);
                     let json=JSON.parse(xhr.responseText);
                     showSnackBar(json.info);
                 };
@@ -285,7 +281,6 @@
                     xhr.open('POST', '/changeSemester');
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                     xhr.onload = function() {
-                        console.log(xhr.responseText);
                         document.getElementById('loading').style.visibility="hidden";
                         const resp=JSON.parse(xhr.responseText);
                         if (resp.code===1) {
@@ -499,7 +494,6 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 userinfo=JSON.parse(xhr.responseText);
-                console.log(userinfo);
                 displayData();
             };
             xhr.send("email="+profile.getEmail());

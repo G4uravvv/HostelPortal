@@ -1107,9 +1107,9 @@ let connectDB= function connectDB() {
         const conn=mysql.createConnection({
             host: "remotemysql.com",
             port: 3306,
-            user: "4y1kC9vQqC",
+            user: "iiitd_hostel_portal_db",
             password: "orSRZaZeRh",
-            database: "4y1kC9vQqC",
+            database: "HostelDB",
             multipleStatements: true
         });
         conn.connect(function (err) {
